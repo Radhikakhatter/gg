@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Slide Generator</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .slide {
+            display: none; /* Hide all slides by default */
+            padding: 50px;
+            text-align: center;
+        }
+
+        .active {
+            display: block; /* Show the active slide */
+        }
+
+        .navigation {
+            margin-top: 20px;
+        }
+
+        .slide-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Dynamic Slide Generator</h2>
+        <div class="mb-3">
+            <input type="text" id="slideTitle" class="form-control" placeholder="Enter slide title">
+            <button id="addSlide" class="btn btn-success mt-2">Add Slide</button>
+        </div>
+
+        <div class="slide-container" id="slidesContainer">
+            <!-- Slides will be dynamically added here -->
+        </div>
+
+        <div class="navigation">
+            <button class="btn btn-primary" onclick="prevSlide()">Previous Slide</button>
+            <button class="btn btn-primary" onclick="nextSlide()">Next Slide</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script>
+        let currentSlideIndex = 0;
+        const slides = [];
+
+        function showSlide(index) {
+            const slidesContainer = document.getElementById('slidesContainer');
+            const slideElements = slidesContainer.getElementsByClassName('slide');
+
+            // Hide all slides
+            for (let slide of slideElements) {
+                slide.classList.remove('active');
+            }
+
+            // Show the current slide
+            if (slideElements[index]) {
+                slideElements[index].classList.add('active');
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        document.getElementById('addSlide').addEventListener('click', function () {
+            const title = document.getElementById('slideTitle').value;
+            if (title) {
+                const slidesContainer = document.getElementById('slidesContainer');
+
+                // Create a new slide
+                const newSlide = document.createElement('div');
+                newSlide.className = 'slide';
+                newSlide.innerHTML = `
+                    <h1>${title}</h1>
+                    <p>This is the content of the slide.</p>
+                    <button class="btn btn-danger" onclick="deleteSlide(${slides.length})">Delete Slide</button>
+                `;
+                slidesContainer.appendChild(newSlide);
+                slides.push(newSlide); // Keep track of slides
+
+                // Clear input field
+                document.getElementById('slideTitle').value = '';
+
+                // Show the first slide if it's the first one added
+                if (slides.length === 1) {
+                    showSlide(0);
+                }
+            } else {
+                alert('Please enter a slide title.');
+            }
+        });
+
+        function deleteSlide(index) {
+            const slidesContainer = document.getElementById('slidesContainer');
+            slidesContainer.removeChild(slides[index]);
+            slides.splice(index, 1); // Remove from array
+
+            // Adjust current slide index if needed
+            if (currentSlideIndex >= slides.length) {
+                currentSlideIndex = slides.length - 1; // Move to last slide if current is deleted
+            }
+
+            showSlide(currentSlideIndex); // Update displayed slide
+        }
+    </script>
+</body>
+
+</html>
